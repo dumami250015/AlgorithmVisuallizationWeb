@@ -1,20 +1,23 @@
 package com.dsa.visualizer.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DPStep {
     private int[][] dpTable;
-    private List<int[]> highlights;
+    // Changed from List<int[]> to List<List<Integer>> for better JSON serialization and type safety
+    private List<List<Integer>> highlights;
     private String description;
 
-    public DPStep(int[][] dpTable, List<int[]> highlights, String description) {
-        this.dpTable = dpTable.clone();
-        this.highlights = List.copyOf(highlights);
+    public DPStep(int[][] dpTable, List<List<Integer>> highlights, String description) {
+        this.dpTable = dpTable; // Array cloning should be done by the caller (Service) to avoid overhead if already cloned
+        // Create a defensive copy of the highlights list
+        this.highlights = new ArrayList<>(highlights);
         this.description = description;
     }
 
     // Getters
     public int[][] getDpTable() { return dpTable; }
-    public List<int[]> getHighlights() { return highlights; }
+    public List<List<Integer>> getHighlights() { return highlights; }
     public String getDescription() { return description; }
 }

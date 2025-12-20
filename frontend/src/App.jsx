@@ -40,7 +40,6 @@ const App = () => {
       overflow: 'hidden',
       backgroundColor: colors.bg
     },
-    // Sidebar: Mobile Overlay vs Desktop Fixed
     sidebar: {
       width: '240px',
       backgroundColor: colors.sidebar,
@@ -112,7 +111,7 @@ const App = () => {
       borderBottom: `1px solid ${colors.border}`,
       display: 'flex',
       alignItems: 'center',
-      padding: '0 20px', // Reduced padding for mobile
+      padding: '0 20px', 
       boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
       zIndex: 5,
       gap: '15px'
@@ -127,10 +126,10 @@ const App = () => {
     },
     contentArea: {
       flex: 1,
-      padding: isMobile ? '15px' : '30px', // Responsive padding
+      padding: isMobile ? '15px' : '30px', 
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'hidden', // Prevent outer scroll
+      overflow: 'hidden', 
       position: 'relative'
     },
     visualizerCard: {
@@ -144,14 +143,13 @@ const App = () => {
       boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
       position: 'relative'
     },
-    // Visualizer Inner Components
     canvasWrapper: {
       flex: 1,
       position: 'relative',
       backgroundColor: '#ffffff',
       width: '100%',
       height: '100%',
-      minHeight: '300px', // Minimum height for chart
+      minHeight: '300px', 
       backgroundImage: 'radial-gradient(#e5e7eb 1px, transparent 1px)',
       backgroundSize: '20px 20px',
       overflow: 'hidden'
@@ -164,7 +162,7 @@ const App = () => {
       gap: '10px',
       backgroundColor: 'white',
       zIndex: 5,
-      flexWrap: 'wrap', // Important for mobile wrapping
+      flexWrap: 'wrap', 
       justifyContent: isMobile ? 'center' : 'flex-start'
     },
     btn: (primary = false) => ({
@@ -195,7 +193,7 @@ const App = () => {
       backgroundPosition: 'right 10px center',
       backgroundRepeat: 'no-repeat',
       backgroundSize: '16px',
-      minWidth: isMobile ? '100%' : '180px', // Full width on mobile
+      minWidth: isMobile ? '100%' : '180px',
       maxWidth: '100%',
       boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
     },
@@ -210,21 +208,18 @@ const App = () => {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      flexShrink: 0 // Prevent footer from shrinking
+      flexShrink: 0
     }
   };
 
   const handleNavClick = (t) => {
     setTab(t);
-    setIsMobileMenuOpen(false); // Close menu on selection
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <div style={styles.app}>
-      {/* Mobile Menu Overlay */}
       <div style={styles.menuOverlay} onClick={() => setIsMobileMenuOpen(false)} />
-
-      {/* SIDEBAR */}
       <aside style={styles.sidebar}>
         <div style={styles.logo}>
           <span>DSA.Viz</span>
@@ -238,21 +233,15 @@ const App = () => {
           ))}
         </nav>
       </aside>
-
-      {/* MAIN AREA */}
       <main style={styles.main}>
-        {/* TOP BAR */}
         <header style={styles.topbar}>
           <button style={styles.menuBtn} onClick={() => setIsMobileMenuOpen(true)}>☰</button>
           <h2 style={{margin: 0, fontSize: '1.25rem', fontWeight: '700', color: colors.textDark}}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)} Algorithms
           </h2>
         </header>
-
-        {/* CONTENT */}
         <div style={styles.contentArea}>
           <div style={styles.visualizerCard}>
-            {/* Pass styles prop to children so they reuse the layout logic */}
             {tab === 'sorting' && <SortingVisualizer styles={styles} />}
             {tab === 'search' && <SearchVisualizer styles={styles} />}
             {tab === 'graph' && <GraphVisualizer styles={styles} />}
@@ -265,7 +254,7 @@ const App = () => {
   );
 };
 
-// --- SORTING COMPONENT ---
+// ... (SortingVisualizer kept as is)
 const SortingVisualizer = ({ styles }) => {
   const [arr, setArr] = useState([]);
   const [algo, setAlgo] = useState('bubble');
@@ -282,7 +271,6 @@ const SortingVisualizer = ({ styles }) => {
 
   useEffect(() => { generate(); }, []);
 
-  // Handle Resize
   useEffect(() => {
     const handleResize = () => generate();
     window.addEventListener('resize', handleResize);
@@ -290,14 +278,17 @@ const SortingVisualizer = ({ styles }) => {
   }, []);
 
   const generate = () => {
-    if(!containerRef.current) return;
+    let width = 800;
+    if(containerRef.current && containerRef.current.offsetWidth > 0) {
+      width = containerRef.current.offsetWidth;
+    }
+    
     let newArr;
     if (customInput.trim()) {
       newArr = customInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
     } else {
-      const width = containerRef.current.offsetWidth;
       const count = Math.floor(width / 20);
-      newArr = Array.from({ length: Math.min(count, 40) }, () => Math.floor(Math.random() * 90) + 5);
+      newArr = Array.from({ length: Math.min(Math.max(count, 5), 40) }, () => Math.floor(Math.random() * 90) + 5);
     }
     setArr(newArr);
     setSteps([]); 
@@ -374,8 +365,8 @@ const SortingVisualizer = ({ styles }) => {
   return (
     <>
       <div style={styles.controls}>
-        <input type="text" placeholder="Custom array (e.g. 1,2,3)" value={customInput} onChange={e => setCustomInput(e.target.value)} style={{...styles.select, width: '200px'}} disabled={playing} />
-        <button style={styles.btn()} onClick={() => generate()} disabled={playing}>Generate</button>
+        <input type="text" placeholder="Custom (e.g. 1,2,3)" value={customInput} onChange={e => setCustomInput(e.target.value)} style={{...styles.select, width: '150px'}} disabled={playing} />
+        <button style={styles.btn()} onClick={() => generate()} disabled={playing}>Gen</button>
         <select value={algo} onChange={e => setAlgo(e.target.value)} style={styles.select} disabled={playing}>
           <option value="bubble">Bubble Sort</option>
           <option value="insertion">Insertion Sort</option>
@@ -389,7 +380,7 @@ const SortingVisualizer = ({ styles }) => {
         <button style={styles.btn()} onClick={handleRestart} disabled={!steps.length}>Restart</button>
         <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
           <label>Speed:</label>
-          <input type="range" min="10" max="500" value={speed} onChange={e => setSpeed(Number(e.target.value))} style={{width: '100px'}} />
+          <input type="range" min="10" max="500" value={speed} onChange={e => setSpeed(Number(e.target.value))} style={{width: '80px'}} />
           <span>{speed}ms</span>
         </div>
       </div>
@@ -432,233 +423,138 @@ const GraphVisualizer = ({ styles }) => {
   const [labels, setLabels] = useState({});
   const canvasRef = useRef(null);
   const wrapperRef = useRef(null);
+  const [edgeListInput, setEdgeListInput] = useState(''); // Replaced Matrix with Edge List
+  const [customMode, setCustomMode] = useState(false);
   
-  // Graph Editor states
-  const [editorMode, setEditorMode] = useState(false);
-  const [dragging, setDragging] = useState(null);
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [adjMatrix, setAdjMatrix] = useState('');
-  const [matrixMode, setMatrixMode] = useState(false);
+  const [draggingNodeId, setDraggingNodeId] = useState(null);
+  const transformRef = useRef({ scale: 1, offsetX: 0, offsetY: 0 });
+
+  const runForceLayout = (nodes, edges, width, height) => {
+    const simNodes = JSON.parse(JSON.stringify(nodes));
+    // Reduced spacing factor from 1.5 to 0.8 to make edges shorter
+    const k = Math.sqrt((width * height) / (simNodes.length + 1)) * 0.8; 
+    const iterations = 300; 
+    const temp = width / 8;
+    
+    for (let i = 0; i < iterations; i++) {
+      for (let v = 0; v < simNodes.length; v++) {
+        simNodes[v].dispX = 0;
+        simNodes[v].dispY = 0;
+        for (let u = 0; u < simNodes.length; u++) {
+          if (v !== u) {
+            const dx = simNodes[v].x - simNodes[u].x;
+            const dy = simNodes[v].y - simNodes[u].y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 0.1) dist = 0.1;
+            const force = (k * k) / dist;
+            simNodes[v].dispX += (dx / dist) * force;
+            simNodes[v].dispY += (dy / dist) * force;
+          }
+        }
+      }
+      edges.forEach(e => {
+        const uNode = simNodes.find(n => n.id === e.source);
+        const vNode = simNodes.find(n => n.id === e.target);
+        if (uNode && vNode) {
+          const dx = uNode.x - vNode.x;
+          const dy = uNode.y - vNode.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 0.1) dist = 0.1;
+          const force = (dist * dist) / k;
+          const dispX = (dx / dist) * force;
+          const dispY = (dy / dist) * force;
+          uNode.dispX -= dispX; uNode.dispY -= dispY;
+          vNode.dispX += dispX; vNode.dispY += dispY;
+        }
+      });
+      const t = temp * (1 - i / iterations); 
+      simNodes.forEach(n => {
+        const dist = Math.sqrt(n.dispX * n.dispX + n.dispY * n.dispY);
+        if (dist > 0) {
+          const limitedDist = Math.min(dist, t);
+          n.x += (n.dispX / dist) * limitedDist;
+          n.y += (n.dispY / dist) * limitedDist;
+        }
+      });
+    }
+    return simNodes;
+  };
 
   const run = async () => {
     try {
       let payload = null;
-      if (editorMode && graphData.nodes.length > 0) {
+      if (graphData.nodes.length > 0) {
         payload = {
-          nodes: graphData.nodes.map(n => ({ id: n.id, x: n.x, y: n.y })),
+          nodes: graphData.nodes.map(n => ({ id: n.id, x: Math.round(n.x), y: Math.round(n.y) })),
           edges: graphData.edges.map(e => ({ source: e.source, target: e.target, weight: e.weight }))
         };
       }
+      if (!payload) {
+        setMsg('No graph data to run.');
+        return;
+      }
       const res = await axios.post(`${BASE_URL}/graph/${algo}`, payload);
-      setGraphData({ nodes: res.data.nodes, edges: res.data.edges });
+      if (!res.data || !Array.isArray(res.data.steps) || res.data.steps.length === 0) {
+        setMsg('No steps returned.');
+        setSteps([]);
+        setPlaying(false);
+        return;
+      }
       setSteps(res.data.steps);
-      setPlaying(true);
       setCurrentStep(0);
+      setPlaying(true);
     } catch (err) {
-      setMsg("Backend connection failed");
+      setMsg('Connection Error');
     }
   };
 
-  // Graph Editor Functions
-  const addNode = (x, y) => {
-    const newId = Math.max(...graphData.nodes.map(n => n.id), 0) + 1;
-    setGraphData(prev => ({
-      ...prev,
-      nodes: [...prev.nodes, { id: newId, x, y }]
-    }));
-  };
-
-  const removeNode = (id) => {
-    setGraphData(prev => ({
-      nodes: prev.nodes.filter(n => n.id !== id),
-      edges: prev.edges.filter(e => e.source !== id && e.target !== id)
-    }));
-  };
-
-  const addEdge = (source, target) => {
-    if (source === target) return;
-    const exists = graphData.edges.some(e => 
-      (e.source === source && e.target === target) || (e.source === target && e.target === source)
-    );
-    if (!exists) {
-      setGraphData(prev => ({
-        ...prev,
-        edges: [...prev.edges, { source, target, weight: 1 }]
-      }));
+  const generateFromEdgeList = () => {
+    const lines = edgeListInput.trim().split('\n');
+    if (lines.length === 0 || lines[0].trim() === '') {
+        alert('Please enter edges.');
+        return;
     }
-  };
 
-  const generateFromMatrix = () => {
-    const rows = adjMatrix.trim().split('\n').map(r => r.trim().split(/\s+/).map(Number));
-    const n = rows.length;
-    if (n === 0 || rows[0].length !== n) {
-      alert('Invalid matrix format. Must be square matrix.');
-      return;
-    }
-    const nodes = [];
     const edges = [];
-    
-    for (let i = 0; i < n; i++) {
-      nodes.push({ id: i, x: 100 + i * 100, y: 150 });
-      for (let j = i + 1; j < n; j++) {
-        if (rows[i][j] > 0) {
-          edges.push({ source: i, target: j, weight: rows[i][j] });
+    const uniqueNodes = new Set();
+
+    for(let line of lines) {
+        const parts = line.trim().split(/\s+/).map(Number);
+        if (parts.length < 2 || parts.some(isNaN)) {
+            continue;
         }
-      }
+        const u = parts[0];
+        const v = parts[1];
+        const w = parts.length > 2 ? parts[2] : 1; 
+
+        edges.push({ source: u, target: v, weight: w });
+        uniqueNodes.add(u);
+        uniqueNodes.add(v);
+    }
+
+    if (edges.length === 0 && uniqueNodes.size === 0) {
+        alert('No valid edges found.');
+        return;
+    }
+
+    const nodes = Array.from(uniqueNodes).map(id => ({
+        id,
+        x: Math.random() * 400 + 50,
+        y: Math.random() * 300 + 50
+    }));
+
+    const isDirected = true;
+
+    let width = 500, height = 400;
+    if (wrapperRef.current && wrapperRef.current.clientWidth > 0) {
+        width = wrapperRef.current.clientWidth;
+        height = wrapperRef.current.clientHeight;
     }
     
-    setGraphData({ nodes, edges });
-    setMatrixMode(false); // Switch to visual mode after generating
+    const layoutNodes = runForceLayout(nodes, edges, width, height);
+    setGraphData({ nodes: layoutNodes, edges, isDirected });
+    setCustomMode(false);
   };
-
-  const handleCanvasClick = (e) => {
-    console.log('Canvas clicked!', e.clientX, e.clientY);
-    if (!editorMode || matrixMode || dragging !== null) return; // Prevent click during drag
-    const cvs = canvasRef.current;
-    const rect = cvs.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
-
-    console.log('Relative coords:', x, y);
-
-    // Transform coordinates to match the drawing coordinate system
-    const w = cvs.width;
-    const h = cvs.height;
-    const baseWidth = 500;
-    const baseHeight = 400;
-    const scale = Math.min(w / baseWidth, h / baseHeight) * 0.7;
-    const offsetX = (w - (baseWidth * scale)) / 2;
-    const offsetY = (h - (baseHeight * scale)) / 2;
-
-    x = (x - offsetX) / scale;
-    y = (y - offsetY) / scale;
-
-    console.log('Transformed coords:', x, y);
-
-    // Check if clicked on node (with larger hit area for better UX)
-    const clickedNode = graphData.nodes.find(n => {
-      const dx = x - n.x;
-      const dy = y - n.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      console.log('Node', n.id, 'at', n.x, n.y, 'distance:', distance);
-      return distance < 35; // Increased from 28 for easier clicking
-    });
-
-    console.log('Clicked node:', clickedNode);
-
-    if (clickedNode) {
-      if (selectedNode === null) {
-        setSelectedNode(clickedNode.id);
-        console.log('Selected node:', clickedNode.id);
-      } else if (selectedNode === clickedNode.id) {
-        setSelectedNode(null);
-        console.log('Deselected node');
-      } else {
-        addEdge(selectedNode, clickedNode.id);
-        setSelectedNode(null);
-        console.log('Added edge between', selectedNode, 'and', clickedNode.id);
-      }
-    } else {
-      // Only add node if not clicking on existing node
-      addNode(x, y);
-      console.log('Added node at', x, y);
-    }
-  };
-
-  const handleMouseDown = (e) => {
-    console.log('Mouse down!', e.clientX, e.clientY);
-    if (!editorMode || matrixMode) return;
-    const cvs = canvasRef.current;
-    const rect = cvs.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
-
-    // Transform coordinates
-    const w = cvs.width;
-    const h = cvs.height;
-    const baseWidth = 500;
-    const baseHeight = 400;
-    const scale = Math.min(w / baseWidth, h / baseHeight) * 0.7;
-    const offsetX = (w - (baseWidth * scale)) / 2;
-    const offsetY = (h - (baseHeight * scale)) / 2;
-
-    x = (x - offsetX) / scale;
-    y = (y - offsetY) / scale;
-
-    const node = graphData.nodes.find(n => {
-      const dx = x - n.x;
-      const dy = y - n.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      console.log('Mouse down on node', n.id, 'distance:', distance);
-      return distance < 35; // Match click detection radius
-    });
-
-    console.log('Dragging node:', node);
-    if (node) {
-      setDragging(node.id);
-    }
-  };
-
-  const handleMouseMove = (e) => {
-    if (!editorMode || matrixMode || dragging === null) return;
-    const cvs = canvasRef.current;
-    const rect = cvs.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
-
-    // Transform coordinates
-    const w = cvs.width;
-    const h = cvs.height;
-    const baseWidth = 500;
-    const baseHeight = 400;
-    const scale = Math.min(w / baseWidth, h / baseHeight) * 0.7;
-    const offsetX = (w - (baseWidth * scale)) / 2;
-    const offsetY = (h - (baseHeight * scale)) / 2;
-
-    x = (x - offsetX) / scale;
-    y = (y - offsetY) / scale;
-
-    setGraphData(prev => ({
-      ...prev,
-      nodes: prev.nodes.map(n =>
-        n.id === dragging ? { ...n, x, y } : n
-      )
-    }));
-  };
-
-  const handleMouseUp = () => {
-    setDragging(null);
-  };
-
-  const handleKeyDown = (e) => {
-    if (selectedNode !== null && e.key === 'Delete') {
-      removeNode(selectedNode);
-      setSelectedNode(null);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedNode]);
-
-  // Separate useEffect for mouse listeners
-  useEffect(() => {
-    const cvs = canvasRef.current;
-    if (!cvs) return;
-    if (editorMode && !matrixMode) {
-      cvs.addEventListener('mousedown', handleMouseDown);
-      cvs.addEventListener('mousemove', handleMouseMove);
-      cvs.addEventListener('mouseup', handleMouseUp);
-      cvs.addEventListener('click', handleCanvasClick);
-      return () => {
-        cvs.removeEventListener('mousedown', handleMouseDown);
-        cvs.removeEventListener('mousemove', handleMouseMove);
-        cvs.removeEventListener('mouseup', handleMouseUp);
-        cvs.removeEventListener('click', handleCanvasClick);
-      };
-    }
-  }, [editorMode, matrixMode]);
 
   useEffect(() => {
     if (playing && currentStep < steps.length) {
@@ -677,6 +573,37 @@ const GraphVisualizer = ({ styles }) => {
     }
   }, [playing, currentStep, steps]);
 
+  const handleMouseDown = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const rawX = e.clientX - rect.left;
+    const rawY = e.clientY - rect.top;
+    const { scale, offsetX, offsetY } = transformRef.current;
+    const mouseX = (rawX - offsetX) / scale;
+    const mouseY = (rawY - offsetY) / scale;
+    const clickedNode = graphData.nodes.find(n => {
+      const dist = Math.sqrt((n.x - mouseX) ** 2 + (n.y - mouseY) ** 2);
+      return dist < 30;
+    });
+    if (clickedNode) setDraggingNodeId(clickedNode.id);
+  };
+
+  const handleMouseMove = (e) => {
+    if (draggingNodeId !== null) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const rawX = e.clientX - rect.left;
+      const rawY = e.clientY - rect.top;
+      const { scale, offsetX, offsetY } = transformRef.current;
+      const mouseX = (rawX - offsetX) / scale;
+      const mouseY = (rawY - offsetY) / scale;
+      setGraphData(prev => ({
+        ...prev,
+        nodes: prev.nodes.map(n => n.id === draggingNodeId ? { ...n, x: mouseX, y: mouseY } : n)
+      }));
+    }
+  };
+
+  const handleMouseUp = () => setDraggingNodeId(null);
+
   useEffect(() => {
     const cvs = canvasRef.current;
     const wrapper = wrapperRef.current;
@@ -688,31 +615,58 @@ const GraphVisualizer = ({ styles }) => {
       draw();
     };
 
+    const drawArrow = (ctx, fromX, fromY, toX, toY, color) => {
+      const headlen = 15; 
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(toX, toY);
+      ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.lineTo(toX, toY);
+      ctx.fill();
+    };
+
     const draw = () => {
       const ctx = cvs.getContext('2d');
       const w = cvs.width;
       const h = cvs.height;
       ctx.clearRect(0,0, w, h);
 
-      if (editorMode && matrixMode) {
-        ctx.fillStyle = '#1e293b';
-        ctx.font = '16px Arial';
-        ctx.fillText('Matrix Input Mode', 20, 30);
-        return;
+      if (customMode) return;
+
+      // Auto Scaling Logic
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      if (graphData.nodes.length > 0) {
+        graphData.nodes.forEach(n => {
+          if(n.x < minX) minX = n.x;
+          if(n.x > maxX) maxX = n.x;
+          if(n.y < minY) minY = n.y;
+          if(n.y > maxY) maxY = n.y;
+        });
+      } else {
+        minX = 0; maxX = 500; minY = 0; maxY = 400;
       }
 
-      // Scaling: Fit graph into view
-      const baseWidth = 500;
-      const baseHeight = 400;
-      // Calculate scale factor, keeping aspect ratio somewhat but ensuring visibility
-      const scale = Math.min(w / baseWidth, h / baseHeight) * 0.7; 
-      const offsetX = (w - (baseWidth * scale)) / 2;
-      const offsetY = (h - (baseHeight * scale)) / 2;
+      const padding = 60;
+      const contentW = (maxX - minX) + padding * 2;
+      const contentH = (maxY - minY) + padding * 2;
+      const scale = Math.min(w / contentW, h / contentH);
+      
+      const centerContentX = (minX + maxX) / 2;
+      const centerContentY = (minY + maxY) / 2;
+      
+      const offsetX = (w / 2) - (centerContentX * scale);
+      const offsetY = (h / 2) - (centerContentY * scale);
+
+      transformRef.current = { scale, offsetX, offsetY };
 
       ctx.save();
       ctx.translate(offsetX, offsetY);
       ctx.scale(scale, scale);
 
+      // Edges
       graphData.edges.forEach(e => {
         const u = graphData.nodes.find(n => n.id === e.source);
         const v = graphData.nodes.find(n => n.id === e.target);
@@ -721,42 +675,89 @@ const GraphVisualizer = ({ styles }) => {
         const isHigh = activeEdges.some(ae => 
           (ae[0]===e.source && ae[1]===e.target) || (ae[0]===e.target && ae[1]===e.source)
         );
-
+        const color = isHigh ? colors.danger : '#cbd5e1';
+        const lineWidth = isHigh ? 4 : 2;
+        const isBidirectional = graphData.isDirected && graphData.edges.some(other => other.source === e.target && other.target === e.source);
+        
         ctx.beginPath();
-        ctx.moveTo(u.x, u.y);
-        ctx.lineTo(v.x, v.y);
-        ctx.strokeStyle = isHigh ? colors.danger : '#cbd5e1';
-        ctx.lineWidth = isHigh ? 6 : 3;
+        let midX, midY;
+
+        if (isBidirectional) {
+          const dx = v.x - u.x;
+          const dy = v.y - u.y;
+          const factor = 0.3; 
+          const offX = -dy * factor; 
+          const offY = dx * factor;
+          const cpX = (u.x + v.x) / 2 + offX;
+          const cpY = (u.y + v.y) / 2 + offY;
+          ctx.moveTo(u.x, u.y);
+          ctx.quadraticCurveTo(cpX, cpY, v.x, v.y);
+          midX = 0.25 * u.x + 0.5 * cpX + 0.25 * v.x;
+          midY = 0.25 * u.y + 0.5 * cpY + 0.25 * v.y;
+        } else {
+          ctx.moveTo(u.x, u.y);
+          ctx.lineTo(v.x, v.y);
+          midX = (u.x + v.x)/2;
+          midY = (u.y + v.y)/2;
+        }
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
         ctx.stroke();
 
-        const mx = (u.x+v.x)/2;
-        const my = (u.y+v.y)/2;
+        if (graphData.isDirected) {
+           const arrowDist = 33; 
+           if(isBidirectional) {
+             const factor = 0.3;
+             const dx = v.x - u.x; const dy = v.y - u.y;
+             const offX = -dy * factor; const offY = dx * factor;
+             const cpX = (u.x + v.x) / 2 + offX;
+             const cpY = (u.y + v.y) / 2 + offY;
+             const angle = Math.atan2(v.y - cpY, v.x - cpX);
+             drawArrow(ctx, 0, 0, v.x - Math.cos(angle)*arrowDist, v.y - Math.sin(angle)*arrowDist, color);
+           } else {
+             const angle = Math.atan2(v.y - u.y, v.x - u.x);
+             drawArrow(ctx, u.x, u.y, v.x - Math.cos(angle)*arrowDist, v.y - Math.sin(angle)*arrowDist, color);
+           }
+        }
+
+        // Draw Weight (Larger)
         ctx.fillStyle = 'white';
-        ctx.beginPath(); ctx.arc(mx, my, 12, 0, 2*Math.PI); ctx.fill();
-        ctx.fillStyle = '#64748b'; ctx.font = 'bold 12px Arial';
+        ctx.beginPath(); 
+        ctx.arc(midX, midY, 14, 0, 2*Math.PI); 
+        ctx.fill();
+        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = '#64748b'; 
+        ctx.font = 'bold 14px Arial'; 
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(e.weight, mx, my);
+        ctx.fillText(e.weight, midX, midY);
       });
 
+      // Draw Nodes (Larger)
       graphData.nodes.forEach(n => {
         ctx.beginPath();
-        ctx.arc(n.x, n.y, 28, 0, 2*Math.PI);
+        ctx.arc(n.x, n.y, 30, 0, 2*Math.PI); 
         const isActive = activeNodes.includes(n.id);
-        const isSelected = selectedNode === n.id;
-        ctx.fillStyle = isActive ? colors.secondary : isSelected ? colors.accent : 'white';
+        ctx.fillStyle = isActive ? colors.secondary : 'white';
+        ctx.shadowColor = 'rgba(0,0,0,0.15)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4;
         ctx.fill();
-        ctx.strokeStyle = isActive ? colors.secondary : isSelected ? colors.accent : '#94a3b8';
-        ctx.lineWidth = isSelected ? 4 : 3;
+        ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        ctx.strokeStyle = isActive ? colors.secondary : '#94a3b8';
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.fillStyle = isActive ? 'white' : '#1e293b';
-        ctx.font = 'bold 16px Arial';
+        ctx.font = 'bold 16px Arial'; 
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(n.id, n.x, n.y);
 
         if(labels[n.id]) {
           ctx.fillStyle = colors.primary;
           ctx.font = 'bold 14px Arial';
-          ctx.fillText(labels[n.id], n.x, n.y - 40);
+          const textWidth = ctx.measureText("D: " + labels[n.id]).width;
+          ctx.save();
+          ctx.fillStyle = 'rgba(255,255,255,0.9)';
+          ctx.fillRect(n.x - textWidth/2 - 4, n.y - 50, textWidth + 8, 20); 
+          ctx.restore();
+          ctx.fillText(`D: ${labels[n.id]}`, n.x, n.y - 40);
         }
       });
       ctx.restore();
@@ -764,16 +765,13 @@ const GraphVisualizer = ({ styles }) => {
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-    };
-  }, [graphData, activeNodes, activeEdges, labels, editorMode, matrixMode, selectedNode, dragging]);
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, [graphData, activeNodes, activeEdges, labels, customMode, draggingNodeId]);
 
   return (
     <>
       <div style={styles.controls}>
-        <select value={algo} onChange={e => setAlgo(e.target.value)} style={styles.select} disabled={playing}>
+        <select value={algo} onChange={e => setAlgo(e.target.value)} style={styles.select}>
           <option value="bfs">BFS</option>
           <option value="dfs">DFS</option>
           <option value="dijkstra">Dijkstra</option>
@@ -783,144 +781,53 @@ const GraphVisualizer = ({ styles }) => {
           <option value="prim">Prim</option>
           <option value="topological">Topological Sort</option>
         </select>
-        <button style={styles.btn()} onClick={() => setEditorMode(!editorMode)} disabled={playing}>
-          {editorMode ? 'Use Default' : 'Custom Graph'}
+        <button style={styles.btn()} onClick={() => setCustomMode(!customMode)}>
+          {customMode ? 'View Graph' : 'Custom Graph'}
         </button>
-        {editorMode && (
+        {customMode && (
           <>
-            <button style={styles.btn()} onClick={() => setMatrixMode(!matrixMode)} disabled={playing}>
-              {matrixMode ? 'Visual Editor' : 'Matrix Input'}
-            </button>
-            {matrixMode && (
-              <>
-                <textarea 
-                  placeholder="Adjacency Matrix (space separated, one row per line)" 
-                  value={adjMatrix} 
-                  onChange={e => setAdjMatrix(e.target.value)} 
-                  style={{...styles.select, width: '250px', height: '40px', resize: 'none'}}
-                  disabled={playing}
-                />
-                <button style={styles.btn()} onClick={generateFromMatrix} disabled={playing}>Generate</button>
-              </>
-            )}
-            <button style={styles.btn()} onClick={() => setGraphData({ nodes: [], edges: [] })} disabled={playing}>Clear</button>
+            <textarea 
+              placeholder="Edge List (Source Target Weight)&#10;e.g.&#10;0 1 5&#10;1 2 3&#10;2 0 1" 
+              value={edgeListInput} 
+              onChange={e => setEdgeListInput(e.target.value)} 
+              style={{...styles.select, width: '200px', height: '60px', resize: 'none', fontFamily: 'monospace'}}
+            />
+            <button style={styles.btn()} onClick={generateFromEdgeList}>Generate</button>
+            <button style={styles.btn()} onClick={() => setGraphData({ nodes: [], edges: [] })}>Clear</button>
           </>
         )}
-        <button style={styles.btn(true)} onClick={() => run()} disabled={playing}>Run</button>
+        <button style={styles.btn(true)} onClick={() => run()}>Run</button>
+        <span style={{fontSize:'0.8rem', color:'#64748b', marginLeft:'10px'}}> (Drag nodes to fix layout)</span>
       </div>
       <div ref={wrapperRef} style={styles.canvasWrapper}>
-        {editorMode && matrixMode ? (
-          <div style={{padding: '20px', color: '#94a3b8'}}>
-            <h3>Adjacency Matrix Input</h3>
-            <p>Enter the adjacency matrix above. Use 0 for no edge, positive numbers for edge weights.</p>
-            <p>Example for 3 nodes:</p>
-            <pre>0 1 2
-1 0 3
-2 3 0</pre>
+        {customMode ? (
+          <div style={{padding: '30px', color: '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+            <h3>Edge List Input Mode</h3>
+            <p style={{marginBottom: '10px'}}>Enter edges as "Source Target Weight" (one per line).</p>
+            <code style={{background: '#f1f5f9', padding: '15px', borderRadius: '8px', display: 'block', marginBottom: '15px', textAlign: 'left'}}>
+              0 1 5<br/>
+              1 2 3<br/>
+              2 0 10
+            </code>
+            <p>Nodes will be created automatically based on IDs found.</p>
           </div>
         ) : (
-          <canvas ref={canvasRef} style={{display: 'block', width: '100%', height: '100%'}} />
+          <canvas 
+            ref={canvasRef} 
+            style={{display: 'block', width: '100%', height: '100%', cursor: draggingNodeId !== null ? 'grabbing' : 'grab'}} 
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          />
         )}
       </div>
-      <div style={styles.statusFooter}>
-        {editorMode ? 'Editor Mode: Click to add nodes, select two nodes to add edge, drag to move' : msg}
-      </div>
-    </>
-  );
-};
-
-// --- TREE COMPONENT ---
-const TreeVisualizer = ({ styles }) => {
-  const [arr, setArr] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
-  const [customArr, setCustomArr] = useState('1,2,3,4,5,6,7,8');
-  const [treeArr, setTreeArr] = useState([]);
-  const [highlights, setHighlights] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [msg, setMsg] = useState('Click Build');
-
-  const run = async () => {
-    try {
-      const parsedArr = customArr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-      setArr(parsedArr);
-      const res = await axios.post(`${BASE_URL}/tree/build`, parsedArr);
-      setSteps(res.data);
-      setPlaying(true);
-      setCurrentStep(0);
-    } catch (err) {
-      setMsg("Connection Error");
-    }
-  };
-
-  useEffect(() => {
-    if (playing && currentStep < steps.length) {
-      const timer = setTimeout(() => {
-        const s = steps[currentStep];
-        setTreeArr(s.treeArray);
-        setHighlights(s.highlights);
-        setMsg(s.description);
-        setCurrentStep(c => c + 1);
-      }, 500);
-      return () => clearTimeout(timer);
-    } else if (currentStep >= steps.length && playing) {
-      setPlaying(false);
-      setMsg("Segment Tree Built!");
-    }
-  }, [playing, currentStep, steps]);
-
-  const renderTree = () => {
-    if(!treeArr || treeArr.length === 0) return <div style={{padding:'20px', color: '#94a3b8'}}>Ready...</div>;
-    
-    const levels = [];
-    let idx = 1; let size = 1;
-    while(idx < treeArr.length && levels.length < 6) {
-      const lvl = [];
-      for(let i=0; i<size; i++) {
-        if(idx < treeArr.length) lvl.push({val: treeArr[idx], id: idx});
-        idx++;
-      }
-      levels.push(lvl);
-      size *= 2;
-    }
-
-    return (
-      <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent: 'center', height: '100%', gap: '2vh'}}>
-        {levels.map((lvl, lIdx) => (
-          <div key={lIdx} style={{display:'flex', gap: '1vw'}}>
-            {lvl.map(n => (
-              <div key={n.id} style={{
-                width: '3vw', height: '3vw', minWidth: '35px', minHeight: '35px',
-                borderRadius: '50%',
-                backgroundColor: highlights.includes(n.id) ? colors.accent : (n.val===0 ? '#f1f5f9' : colors.primary),
-                color: n.val===0 ? '#cbd5e1' : 'white',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 'bold', fontSize: '0.9rem',
-                border: n.val === 0 ? '1px dashed #cbd5e1' : 'none',
-                transition: 'all 0.3s'
-              }}>
-                {n.val}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  return (
-    <>
-      <div style={styles.controls}>
-        <input type="text" placeholder="Array (e.g. 1,2,3,4)" value={customArr} onChange={e => setCustomArr(e.target.value)} style={{...styles.select, width: '200px'}} />
-        <button style={styles.btn(true)} onClick={() => run()} disabled={playing}>Build</button>
-      </div>
-      <div style={styles.canvasWrapper}>{renderTree()}</div>
       <div style={styles.statusFooter}>{msg}</div>
     </>
   );
 };
 
-// --- SEARCH COMPONENT ---
+// ... (SearchVisualizer kept as is)
 const SearchVisualizer = ({ styles }) => {
   const [arr, setArr] = useState([10, 20, 30, 40, 50]);
   const [target, setTarget] = useState(30);
@@ -935,14 +842,11 @@ const SearchVisualizer = ({ styles }) => {
       let searchArr = arr;
       if (algo === 'binary') {
         searchArr = [...arr].sort((a, b) => a - b);
-        setArr(searchArr); // Update display to sorted
+        setArr(searchArr); 
       }
-      console.log('Sending:', { array: searchArr, target });
       const res = await axios.post(`${BASE_URL}/search/${algo}`, { array: searchArr, target });
-      console.log('Response:', res.data);
       setSteps(res.data);
       setCurrentStep(0);
-      // Auto play
       const interval = setInterval(() => {
         setCurrentStep(c => {
           if (c < res.data.length - 1) return c + 1;
@@ -992,7 +896,357 @@ const SearchVisualizer = ({ styles }) => {
   );
 };
 
-// --- DP COMPONENT ---
+// --- UPDATED TREE COMPONENT (Zoom, Pan, Drag - Fixed Selection) ---
+const TreeVisualizer = ({ styles }) => {
+  const [arr, setArr] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
+  const [customArr, setCustomArr] = useState('1,2,3,4,5,6,7,8');
+  const [edgeList, setEdgeList] = useState('1 2\n1 3\n2 4\n2 5'); 
+  const [treeArr, setTreeArr] = useState([]);
+  const [highlights, setHighlights] = useState([]);
+  const [steps, setSteps] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [treeType, setTreeType] = useState('sum');
+  const [lcaNodes, setLcaNodes] = useState({ n1: 4, n2: 5 });
+  const [msg, setMsg] = useState('Click Build');
+  
+  // View Control States
+  const [zoom, setZoom] = useState(1); 
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
+  const [autoZoom, setAutoZoom] = useState(false);
+
+  const NODE_RADIUS = 25;
+  const svgRef = useRef(null);
+  
+  const run = async () => {
+    try {
+      let res;
+      if (treeType === 'lca') {
+        const edges = edgeList.trim().split('\n').map(line => {
+            const parts = line.trim().split(/\s+/).map(Number);
+            if (parts.length < 2 || parts.some(isNaN)) return null;
+            return [parts[0], parts[1]];
+        }).filter(x => x);
+        
+        if (edges.length === 0) {
+            setMsg("Please enter valid edges");
+            return;
+        }
+
+        res = await axios.post(`${BASE_URL}/tree/lca`, { 
+            edges: edges, 
+            n1: Number(lcaNodes.n1), 
+            n2: Number(lcaNodes.n2) 
+        });
+      } else {
+        const parsedArr = customArr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        setArr(parsedArr);
+        res = await axios.post(`${BASE_URL}/tree/build/${treeType}`, parsedArr);
+      }
+      setSteps(res.data);
+      setPlaying(true);
+      setCurrentStep(0);
+      // Reset view on new run
+      setZoom(1); 
+      setPan({ x: 0, y: 0 });
+    } catch (err) {
+      setMsg("Connection Error: " + err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (playing && steps.length > 0 && currentStep < steps.length) {
+      const timer = setTimeout(() => {
+        const s = steps[currentStep];
+        if (s) { 
+            setTreeArr(s.treeArray || []); 
+            setHighlights(s.highlights || []);
+            setMsg(s.description || '');
+        }
+        setCurrentStep(c => c + 1);
+      }, 800); 
+      return () => clearTimeout(timer);
+    } else if (currentStep >= steps.length && playing) {
+      setPlaying(false);
+      setMsg("Operation Complete!");
+    }
+  }, [playing, currentStep, steps]);
+
+  // Handle Mouse Events for Panning
+  const handleMouseDown = (e) => {
+    // Prevent default text selection behavior
+    e.preventDefault();
+    setIsPanning(true);
+    setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isPanning) return;
+    e.preventDefault(); // Prevent selection while dragging
+    const dx = e.clientX - lastMousePos.x;
+    const dy = e.clientY - lastMousePos.y;
+    
+    // Increased drag speed multiplier (e.g., 1.5x)
+    const dragSpeedMultiplier = 1.5; 
+    setPan(prev => ({ 
+        x: prev.x - (dx * dragSpeedMultiplier) / zoom, 
+        y: prev.y - (dy * dragSpeedMultiplier) / zoom 
+    }));
+    setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
+  const handleWheel = (e) => {
+    // Zoom in/out on scroll
+    if (e.target.closest('svg')) { // Ensure scrolling only happens over the SVG
+        e.preventDefault(); 
+        const scaleFactor = 0.1;
+        const delta = -Math.sign(e.deltaY) * scaleFactor;
+        setZoom(z => Math.max(0.1, Math.min(5, z + delta)));
+    }
+  };
+
+  // Add wheel listener to SVG specifically
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (svg) {
+        svg.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    return () => {
+        if (svg) svg.removeEventListener('wheel', handleWheel);
+    }
+  }, []); 
+
+  const getTreeNodes = () => {
+    if (!treeArr || treeArr.length === 0) return { nodes: [], edges: [], bounds: {x:0, y:0, w:100, h:100} };
+
+    const nodes = [];
+    const edges = [];
+    const maxIndex = treeArr.length;
+    const depth = Math.floor(Math.log2(maxIndex)) + 1;
+    
+    const LEVEL_HEIGHT = 100;
+    const maxLeaves = Math.pow(2, depth - 1);
+    const totalInternalWidth = Math.max(800, maxLeaves * 70);
+    
+    const traverse = (i, x, y, level, parentX, parentY) => {
+      // Basic visibility check (hide 0s if they mean empty)
+      // This applies to ALL tree types (LCA and Heaps) to ensure consistent design
+      if (i >= maxIndex) {
+          return;
+      }
+      
+      // FIX for Sum/Min/Max Segment Trees: 
+      // Do NOT hide node if value is 0 unless it's out of bounds, 
+      // because 0 is a valid sum or value.
+      // Only hide if we strictly know it's a null placeholder, but in int[] we don't.
+      // So we show all nodes up to maxIndex that the backend returns.
+
+      nodes.push({ id: i, val: treeArr[i], x: x, y: y });
+
+      if (parentX !== null) {
+        edges.push({ fromX: parentX, fromY: parentY, toX: x, toY: y });
+      }
+
+      const spread = totalInternalWidth / Math.pow(2, level + 2); 
+      
+      traverse(2 * i, x - spread, y + LEVEL_HEIGHT, level + 1, x, y);
+      traverse(2 * i + 1, x + spread, y + LEVEL_HEIGHT, level + 1, x, y);
+    };
+
+    traverse(1, totalInternalWidth / 2, 50, 0, null, null);
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    if (nodes.length > 0) {
+      nodes.forEach(n => {
+        if(n.x < minX) minX = n.x;
+        if(n.x > maxX) maxX = n.x;
+        if(n.y < minY) minY = n.y;
+        if(n.y > maxY) maxY = n.y;
+      });
+    } else {
+      return { nodes: [], edges: [], bounds: {x:0, y:0, w:100, h:100} };
+    }
+
+    const padding = 50;
+    const bounds = {
+      x: minX - padding,
+      y: minY - padding,
+      w: (maxX - minX) + padding * 2,
+      h: (maxY - minY) + padding * 2
+    };
+
+    return { nodes, edges, bounds };
+  };
+
+  const { nodes, edges, bounds } = getTreeNodes();
+
+  const renderTreeSVG = () => {
+    if (!treeArr || treeArr.length <= 1) return <div style={{padding:'20px', color: '#94a3b8'}}>Ready...</div>;
+
+    let viewBoxX, viewBoxY, viewW, viewH;
+
+    // Auto-Focus Logic overrides manual pan if enabled
+    if (autoZoom && highlights.length > 0) {
+        let hMinX = Infinity, hMaxX = -Infinity, hMinY = Infinity, hMaxY = -Infinity;
+        let found = false;
+        nodes.forEach(n => {
+            if (highlights.includes(n.id)) {
+                if (n.x < hMinX) hMinX = n.x;
+                if (n.x > hMaxX) hMaxX = n.x;
+                if (n.y < hMinY) hMinY = n.y;
+                if (n.y > hMaxY) hMaxY = n.y;
+                found = true;
+            }
+        });
+
+        if (found) {
+            const centerX = (hMinX + hMaxX) / 2;
+            const centerY = (hMinY + hMaxY) / 2;
+            viewW = 600 / zoom; 
+            viewH = 400 / zoom;
+            viewBoxX = centerX - viewW / 2;
+            viewBoxY = centerY - viewH / 2;
+        } else {
+             viewW = bounds.w / zoom;
+             viewH = bounds.h / zoom;
+             viewBoxX = (bounds.x + bounds.w/2) - viewW/2 + pan.x;
+             viewBoxY = (bounds.y + bounds.h/2) - viewH/2 + pan.y;
+        }
+    } else {
+        const centerX = bounds.x + bounds.w / 2;
+        const centerY = bounds.y + bounds.h / 2;
+        
+        viewW = bounds.w / zoom;
+        viewH = bounds.h / zoom;
+        
+        viewBoxX = (centerX - viewW / 2) + pan.x;
+        viewBoxY = (centerY - viewH / 2) + pan.y;
+    }
+
+    return (
+      <svg 
+        ref={svgRef}
+        width="100%" 
+        height="100%" 
+        viewBox={`${viewBoxX} ${viewBoxY} ${viewW} ${viewH}`}
+        preserveAspectRatio="xMidYMid meet"
+        style={{
+            display: 'block', 
+            cursor: isPanning ? 'grabbing' : 'grab', 
+            transition: isPanning ? 'none' : 'viewBox 0.3s ease-out',
+            userSelect: 'none', 
+            WebkitUserSelect: 'none'
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="28" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1" />
+          </marker>
+        </defs>
+        
+        {edges.map((e, idx) => (
+          <line 
+            key={`edge-${idx}`}
+            x1={e.fromX} y1={e.fromY}
+            x2={e.toX} y2={e.toY}
+            stroke="#cbd5e1"
+            strokeWidth="2"
+          />
+        ))}
+
+        {nodes.map((n) => {
+          const isHighlight = highlights.includes(n.id);
+          const isSpecial = n.val === 2147483647 || n.val === -2147483648;
+          
+          return (
+            <g key={`node-${n.id}`}>
+              <circle 
+                cx={n.x} cy={n.y} r={NODE_RADIUS}
+                fill={isHighlight ? colors.accent : colors.primary}
+                stroke="white" strokeWidth="2"
+                style={{transition: 'fill 0.3s ease'}}
+              />
+              <text 
+                x={n.x} y={n.y} 
+                dy=".35em" 
+                textAnchor="middle" 
+                fill="white" 
+                fontWeight="bold"
+                fontSize="12px"
+                style={{
+                    pointerEvents:'none', 
+                    userSelect: 'none' 
+                }} 
+              >
+                {isSpecial ? '∞' : n.val}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
+  return (
+    <>
+      <div style={styles.controls}>
+        <select value={treeType} onChange={e => setTreeType(e.target.value)} style={styles.select}>
+          <option value="sum">Sum Segment Tree</option>
+          <option value="min">Min Segment Tree</option>
+          <option value="max">Max Segment Tree</option>
+          <option value="heap-min">Min Heap</option>
+          <option value="heap-max">Max Heap</option>
+          <option value="lca">Lowest Common Ancestor</option>
+        </select>
+
+        {treeType === 'lca' ? (
+          <>
+             <textarea 
+              placeholder="Edges (Parent Child)&#10;1 2&#10;1 3&#10;2 4" 
+              value={edgeList} 
+              onChange={e => setEdgeList(e.target.value)} 
+              style={{...styles.select, width: '150px', height: '40px', resize: 'none', fontSize: '0.8rem'}}
+            />
+            <input type="number" placeholder="N1" value={lcaNodes.n1} onChange={e => setLcaNodes({...lcaNodes, n1: Number(e.target.value)})} style={{...styles.select, width: '50px'}} />
+            <input type="number" placeholder="N2" value={lcaNodes.n2} onChange={e => setLcaNodes({...lcaNodes, n2: Number(e.target.value)})} style={{...styles.select, width: '50px'}} />
+          </>
+        ) : (
+          <input type="text" placeholder="Array (e.g. 1,2,3,4)" value={customArr} onChange={e => setCustomArr(e.target.value)} style={{...styles.select, width: '180px'}} />
+        )}
+        
+        <button style={styles.btn(true)} onClick={() => run()} disabled={playing}>{treeType === 'lca' ? 'Find LCA' : 'Build'}</button>
+        
+        {/* Zoom Controls */}
+        <div style={{display:'flex', alignItems:'center', gap:'5px', marginLeft: 'auto'}}>
+            <button style={{...styles.btn(), backgroundColor: autoZoom ? colors.accent : '#e2e8f0', color: autoZoom ? 'white' : colors.textDark, fontSize:'0.75rem', padding:'6px 10px'}} onClick={() => setAutoZoom(!autoZoom)}>
+                {autoZoom ? 'Auto Focus: ON' : 'Auto Focus: OFF'}
+            </button>
+            <button style={styles.btn()} onClick={() => setZoom(z => Math.max(0.1, z - 0.2))}>-</button>
+            <span style={{fontSize:'0.8rem', minWidth:'40px', textAlign:'center'}}>{Math.round(zoom * 100)}%</span>
+            <button style={styles.btn()} onClick={() => setZoom(z => Math.min(5, z + 0.2))}>+</button>
+        </div>
+      </div>
+      <div style={styles.canvasWrapper}>
+        {renderTreeSVG()}
+      </div>
+      <div style={styles.statusFooter}>
+        {(steps.length > 0 && steps[currentStep]) ? steps[currentStep].description : msg}
+      </div>
+    </>
+  );
+};
+
+// ... (DPVisualizer kept same)
 const DPVisualizer = ({ styles }) => {
   const [dpType, setDpType] = useState('knapsack');
   const [steps, setSteps] = useState([]);
@@ -1000,12 +1254,11 @@ const DPVisualizer = ({ styles }) => {
   const [msg, setMsg] = useState('Select DP problem');
   
   // Custom inputs
-  const [weights, setWeights] = useState('1,2,3');
-  const [values, setValues] = useState('10,20,30');
+  const [weights, setWeights] = useState('2,3,4,5');
+  const [values, setValues] = useState('3,4,5,6');
   const [capacity, setCapacity] = useState(5);
-  const [s1, setS1] = useState('ABC');
-  const [s2, setS2] = useState('ACB');
-  const [dims, setDims] = useState('10,20,30,40');
+  const [s1, setS1] = useState('ABCBDAB');
+  const [s2, setS2] = useState('BDCABA');
 
   const run = async () => {
     try {
@@ -1016,9 +1269,6 @@ const DPVisualizer = ({ styles }) => {
         res = await axios.post(`${BASE_URL}/dp/knapsack`, { weights: w, values: v, capacity });
       } else if (dpType === 'lcs') {
         res = await axios.post(`${BASE_URL}/dp/lcs`, { s1, s2 });
-      } else if (dpType === 'matrixchain') {
-        const d = dims.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-        res = await axios.post(`${BASE_URL}/dp/matrixchain`, d);
       }
       setSteps(res.data);
       setCurrentStep(0);
@@ -1030,18 +1280,64 @@ const DPVisualizer = ({ styles }) => {
   const renderTable = () => {
     if (!steps.length || currentStep >= steps.length) return null;
     const table = steps[currentStep].dpTable;
+    
+    // Better Table Styling
+    const cellStyle = (isActive, isHeader = false) => ({
+      width: '40px',
+      height: '40px',
+      border: '1px solid #e2e8f0',
+      textAlign: 'center',
+      verticalAlign: 'middle',
+      backgroundColor: isActive ? colors.accent : (isHeader ? '#f1f5f9' : 'white'),
+      color: isActive ? 'white' : colors.textDark,
+      fontWeight: isHeader || isActive ? 'bold' : 'normal',
+      fontSize: '0.9rem',
+      transition: 'background-color 0.2s'
+    });
+
+    // LCS Headers
+    let colHeaders = null;
+    let rowHeaders = null;
+
+    if (dpType === 'lcs') {
+      colHeaders = ['Ø', ...s2.split('')];
+      rowHeaders = ['Ø', ...s1.split('')];
+    } else if (dpType === 'knapsack') {
+      // Knapsack headers: Columns are Capacity 0..C, Rows are Items 0..N
+      colHeaders = Array.from({length: capacity + 1}, (_, i) => i);
+      rowHeaders = Array.from({length: table.length}, (_, i) => i === 0 ? 'Ø' : `I${i}`);
+    }
+
     return (
-      <table style={{borderCollapse: 'collapse', margin: '20px'}}>
-        <tbody>
-          {table.map((row, i) => (
-            <tr key={i}>
-              {row.map((cell, j) => (
-                <td key={j} style={{border: '1px solid black', padding: '5px', background: steps[currentStep].highlights.some(h => h[0] === i && h[1] === j) ? colors.accent : 'white'}}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div style={{overflow: 'auto', maxWidth: '100%', maxHeight: '100%'}}>
+        <table style={{borderCollapse: 'separate', borderSpacing: '2px', margin: '0 auto'}}>
+          {/* Column Headers */}
+          {colHeaders && (
+            <thead>
+              <tr>
+                <th></th> {/* Corner */}
+                {colHeaders.map((h, i) => (
+                  <th key={i} style={cellStyle(false, true)}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {table.map((row, i) => (
+              <tr key={i}>
+                {/* Row Header */}
+                {rowHeaders && <td style={cellStyle(false, true)}>{rowHeaders[i]}</td>}
+                {row.map((cell, j) => {
+                  const isHighlight = steps[currentStep].highlights.some(h => h[0] === i && h[1] === j);
+                  return (
+                    <td key={j} style={cellStyle(isHighlight)}>{cell}</td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
   };
 
@@ -1051,29 +1347,35 @@ const DPVisualizer = ({ styles }) => {
         <select value={dpType} onChange={e => setDpType(e.target.value)} style={styles.select}>
           <option value="knapsack">0/1 Knapsack</option>
           <option value="lcs">LCS</option>
-          <option value="matrixchain">Matrix Chain</option>
         </select>
         {dpType === 'knapsack' && (
           <>
-            <input type="text" placeholder="Weights (e.g. 1,2,3)" value={weights} onChange={e => setWeights(e.target.value)} style={{...styles.select, width: '150px'}} />
-            <input type="text" placeholder="Values (e.g. 10,20,30)" value={values} onChange={e => setValues(e.target.value)} style={{...styles.select, width: '150px'}} />
-            <input type="number" placeholder="Capacity" value={capacity} onChange={e => setCapacity(Number(e.target.value))} style={{...styles.select, width: '100px'}} />
+            <div style={{display:'flex', flexDirection:'column', gap:'5px'}}>
+              <span style={{fontSize:'0.75rem', color:'#64748b'}}>Weights</span>
+              <input type="text" placeholder="2,3,4" value={weights} onChange={e => setWeights(e.target.value)} style={{...styles.select, width: '120px', padding:'6px'}} />
+            </div>
+            <div style={{display:'flex', flexDirection:'column', gap:'5px'}}>
+              <span style={{fontSize:'0.75rem', color:'#64748b'}}>Values</span>
+              <input type="text" placeholder="3,4,5" value={values} onChange={e => setValues(e.target.value)} style={{...styles.select, width: '120px', padding:'6px'}} />
+            </div>
+            <div style={{display:'flex', flexDirection:'column', gap:'5px'}}>
+              <span style={{fontSize:'0.75rem', color:'#64748b'}}>Cap</span>
+              <input type="number" placeholder="5" value={capacity} onChange={e => setCapacity(Number(e.target.value))} style={{...styles.select, width: '60px', padding:'6px'}} />
+            </div>
           </>
         )}
         {dpType === 'lcs' && (
           <>
-            <input type="text" placeholder="String 1" value={s1} onChange={e => setS1(e.target.value)} style={{...styles.select, width: '120px'}} />
-            <input type="text" placeholder="String 2" value={s2} onChange={e => setS2(e.target.value)} style={{...styles.select, width: '120px'}} />
+            <input type="text" placeholder="S1" value={s1} onChange={e => setS1(e.target.value)} style={{...styles.select, width: '120px'}} />
+            <input type="text" placeholder="S2" value={s2} onChange={e => setS2(e.target.value)} style={{...styles.select, width: '120px'}} />
           </>
         )}
-        {dpType === 'matrixchain' && (
-          <input type="text" placeholder="Dimensions (e.g. 10,20,30)" value={dims} onChange={e => setDims(e.target.value)} style={{...styles.select, width: '180px'}} />
-        )}
         <button style={styles.btn(true)} onClick={() => run()}>Run</button>
-        <button style={styles.btn()} onClick={() => setCurrentStep(c => Math.min(c + 1, steps.length - 1))}>Next Step</button>
+        <button style={styles.btn()} onClick={() => setCurrentStep(c => Math.max(0, c - 1))} disabled={currentStep===0}>Prev</button>
+        <button style={styles.btn()} onClick={() => setCurrentStep(c => Math.min(c + 1, steps.length - 1))} disabled={currentStep>=steps.length-1}>Next</button>
       </div>
       <div style={styles.canvasWrapper}>
-        {renderTable()}
+        {steps.length === 0 ? <div style={{color:'#94a3b8', marginTop:'20px'}}>Enter data and click Run</div> : renderTable()}
       </div>
       <div style={styles.statusFooter}>{steps.length ? steps[currentStep].description : msg}</div>
     </>
